@@ -176,88 +176,94 @@ const About = () => {
           </div>
         </div>
 
-        {/* Our Approach - Modern Timeline */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Our Approach</h2>
-            <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        {/* Our Approach - Enhanced Timeline */}
+        <div className="mb-16 relative">
+          {/* Glassy gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-100/40 via-white/60 to-orange-100/40 dark:from-cyan-900/40 dark:via-gray-900/80 dark:to-orange-900/40 rounded-3xl blur-sm -z-10"></div>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-teal-400 to-orange-400 mb-4 tracking-tight drop-shadow-lg">Our Approach</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-200 max-w-2xl mx-auto font-medium">
               Ishara combines cutting-edge technology with deep respect for ISL and the deaf community's unique needs.
             </p>
           </div>
-          <div className="relative max-w-3xl mx-auto">
-            {/* Vertical timeline line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-teal-400 to-orange-400 rounded-full -translate-x-1/2 z-0"></div>
-            <div className="space-y-16 relative z-10">
+          <div className="relative max-w-3xl mx-auto px-2">
+            {/* Vertical animated timeline line */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-teal-400 to-orange-400 rounded-full -translate-x-1/2 z-0 animate-pulse"></div>
+            <div className="space-y-24 relative z-10">
               {/* Step 1 */}
-              <div className="flex flex-col md:flex-row items-center md:items-stretch relative">
-                <div className="flex flex-col items-center md:w-1/2 md:pr-8">
-                  <div className="bg-cyan-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl font-bold shadow-lg mb-4 animate-bounce">
+              <div className="flex flex-col items-center group">
+                <div className="relative z-10">
+                  <div className="bg-cyan-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-extrabold shadow-2xl border-4 border-white dark:border-gray-900 mb-4 transition-transform group-hover:scale-110 duration-300 font-mono animate-bounce">
                     1
                   </div>
-                  <div className="bg-white dark:bg-gray-800/80 rounded-xl shadow-lg p-6 w-full">
-                    <div className="flex items-center mb-3">
-                      <span className="inline-block bg-cyan-100 dark:bg-cyan-900 p-3 rounded-full mr-3">
-                        <Lightbulb className="h-8 w-8 text-cyan-500" />
-                      </span>
-                      <h3 className="text-xl font-bold text-cyan-600 dark:text-cyan-400">Technology with Purpose</h3>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3">
-                      We develop AI models specifically trained on Indian Sign Language, recognizing its unique grammar and regional variations.
-                    </p>
-                    <ul className="space-y-2 text-gray-600 dark:text-gray-300">
-                      <li className="flex items-center"><BadgeCheck className="h-4 w-4 text-cyan-500 mr-2" />High-accuracy gesture recognition</li>
-                      <li className="flex items-center"><BadgeCheck className="h-4 w-4 text-cyan-500 mr-2" />Real-time processing</li>
-                      <li className="flex items-center"><BadgeCheck className="h-4 w-4 text-cyan-500 mr-2" />Privacy-preserving design</li>
-                    </ul>
+                  {/* Animated dot below */}
+                  <div className="w-4 h-4 bg-cyan-400 rounded-full mx-auto animate-ping mb-2"></div>
+                </div>
+                <div className="bg-white/80 dark:bg-gray-900/80 rounded-2xl shadow-2xl p-8 w-full mt-2 backdrop-blur-md border border-cyan-200 dark:border-cyan-800 transition-transform group-hover:scale-105 duration-300 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0">
+                  <div className="flex items-center mb-4">
+                    <span className="inline-block bg-cyan-100 dark:bg-cyan-900 p-3 rounded-full mr-3 shadow-lg">
+                      <Lightbulb className="h-8 w-8 text-cyan-500" />
+                    </span>
+                    <h3 className="text-2xl font-bold text-cyan-600 dark:text-cyan-300 font-mono tracking-tight">Technology with Purpose</h3>
                   </div>
+                  <p className="text-gray-700 dark:text-gray-200 mb-3 font-medium">
+                    We develop AI models specifically trained on Indian Sign Language, recognizing its unique grammar and regional variations.
+                  </p>
+                  <ul className="space-y-2 text-gray-700 dark:text-gray-200">
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-cyan-500 mr-2" />High-accuracy gesture recognition</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-cyan-500 mr-2" />Real-time processing</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-cyan-500 mr-2" />Privacy-preserving design</li>
+                  </ul>
                 </div>
               </div>
               {/* Step 2 */}
-              <div className="flex flex-col md:flex-row items-center md:items-stretch relative">
-                <div className="flex flex-col items-center md:w-1/2 md:pl-8 md:order-2 md:text-right">
-                  <div className="bg-teal-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl font-bold shadow-lg mb-4 animate-bounce">
+              <div className="flex flex-col items-center group">
+                <div className="relative z-10">
+                  <div className="bg-teal-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-extrabold shadow-2xl border-4 border-white dark:border-gray-900 mb-4 transition-transform group-hover:scale-110 duration-300 font-mono animate-bounce">
                     2
                   </div>
-                  <div className="bg-white dark:bg-gray-800/80 rounded-xl shadow-lg p-6 w-full">
-                    <div className="flex items-center mb-3 justify-end">
-                      <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400 mr-3">Community-Driven Development</h3>
-                      <span className="inline-block bg-teal-100 dark:bg-teal-900 p-3 rounded-full">
-                        <Users className="h-8 w-8 text-teal-500" />
-                      </span>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3">
-                      We collaborate closely with the deaf community, ISL interpreters, and educators to ensure our solutions address real needs.
-                    </p>
-                    <ul className="space-y-2 text-gray-600 dark:text-gray-300">
-                      <li className="flex items-center justify-end"><span>Deaf-led research and testing</span><BadgeCheck className="h-4 w-4 text-teal-500 ml-2" /></li>
-                      <li className="flex items-center justify-end"><span>Cultural sensitivity and relevance</span><BadgeCheck className="h-4 w-4 text-teal-500 ml-2" /></li>
-                      <li className="flex items-center justify-end"><span>Regular user feedback implementation</span><BadgeCheck className="h-4 w-4 text-teal-500 ml-2" /></li>
-                    </ul>
+                  <div className="w-4 h-4 bg-teal-400 rounded-full mx-auto animate-ping mb-2"></div>
+                </div>
+                <div className="bg-white/80 dark:bg-gray-900/80 rounded-2xl shadow-2xl p-8 w-full mt-2 backdrop-blur-md border border-teal-200 dark:border-teal-800 transition-transform group-hover:scale-105 duration-300 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0">
+                  <div className="flex items-center mb-4">
+                    <span className="inline-block bg-teal-100 dark:bg-teal-900 p-3 rounded-full mr-3 shadow-lg">
+                      <Users className="h-8 w-8 text-teal-500" />
+                    </span>
+                    <h3 className="text-2xl font-bold text-teal-600 dark:text-teal-300 font-mono tracking-tight">Community-Driven Development</h3>
                   </div>
+                  <p className="text-gray-700 dark:text-gray-200 mb-3 font-medium">
+                    We collaborate closely with the deaf community, ISL interpreters, and educators to ensure our solutions address real needs.
+                  </p>
+                  <ul className="space-y-2 text-gray-700 dark:text-gray-200">
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-teal-500 mr-2" />Deaf-led research and testing</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-teal-500 mr-2" />Cultural sensitivity and relevance</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-teal-500 mr-2" />Regular user feedback implementation</li>
+                  </ul>
                 </div>
               </div>
               {/* Step 3 */}
-              <div className="flex flex-col md:flex-row items-center md:items-stretch relative">
-                <div className="flex flex-col items-center md:w-1/2 md:pr-8">
-                  <div className="bg-orange-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl font-bold shadow-lg mb-4 animate-bounce">
+              <div className="flex flex-col items-center group">
+                <div className="relative z-10">
+                  <div className="bg-orange-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-extrabold shadow-2xl border-4 border-white dark:border-gray-900 mb-4 transition-transform group-hover:scale-110 duration-300 font-mono animate-bounce">
                     3
                   </div>
-                  <div className="bg-white dark:bg-gray-800/80 rounded-xl shadow-lg p-6 w-full">
-                    <div className="flex items-center mb-3">
-                      <span className="inline-block bg-orange-100 dark:bg-orange-900 p-3 rounded-full mr-3">
-                        <Globe className="h-8 w-8 text-orange-500" />
-                      </span>
-                      <h3 className="text-xl font-bold text-orange-600 dark:text-orange-400">Holistic Ecosystem</h3>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3">
-                      We go beyond translation to create a comprehensive platform for learning, connecting, and advocating.
-                    </p>
-                    <ul className="space-y-2 text-gray-600 dark:text-gray-300">
-                      <li className="flex items-center"><span>ISL education and resources</span><BadgeCheck className="h-4 w-4 text-orange-500 ml-2" /></li>
-                      <li className="flex items-center"><span>Community building features</span><BadgeCheck className="h-4 w-4 text-orange-500 ml-2" /></li>
-                      <li className="flex items-center"><span>Awareness and advocacy tools</span><BadgeCheck className="h-4 w-4 text-orange-500 ml-2" /></li>
-                    </ul>
+                  <div className="w-4 h-4 bg-orange-400 rounded-full mx-auto animate-ping mb-2"></div>
+                </div>
+                <div className="bg-white/80 dark:bg-gray-900/80 rounded-2xl shadow-2xl p-8 w-full mt-2 backdrop-blur-md border border-orange-200 dark:border-orange-800 transition-transform group-hover:scale-105 duration-300 opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0">
+                  <div className="flex items-center mb-4">
+                    <span className="inline-block bg-orange-100 dark:bg-orange-900 p-3 rounded-full mr-3 shadow-lg">
+                      <Globe className="h-8 w-8 text-orange-500" />
+                    </span>
+                    <h3 className="text-2xl font-bold text-orange-600 dark:text-orange-300 font-mono tracking-tight">Holistic Ecosystem</h3>
                   </div>
+                  <p className="text-gray-700 dark:text-gray-200 mb-3 font-medium">
+                    We go beyond translation to create a comprehensive platform for learning, connecting, and advocating.
+                  </p>
+                  <ul className="space-y-2 text-gray-700 dark:text-gray-200">
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-orange-500 mr-2" />ISL education and resources</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-orange-500 mr-2" />Community building features</li>
+                    <li className="flex items-center"><BadgeCheck className="h-5 w-5 text-orange-500 mr-2" />Awareness and advocacy tools</li>
+                  </ul>
                 </div>
               </div>
             </div>
