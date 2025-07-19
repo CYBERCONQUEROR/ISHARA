@@ -63,7 +63,7 @@ const Translator = () => {
           <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 overflow-hidden">
             <CardContent className="p-4 sm:p-6">
               <div className="relative aspect-[4/3] bg-black rounded-lg overflow-hidden flex items-center justify-center">
-                <video ref={videoRef} className="absolute top-0 left-0 w-full h-full object-cover" autoPlay playsInline muted />
+                <video ref={videoRef} className="absolute top-0 left-0 w-full h-full object-cover" autoPlay playsInline muted style={{ transform: "scaleX(-1)" }} />
                 <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
                 {!isCameraOn && (
                   <div className="z-10 text-center">

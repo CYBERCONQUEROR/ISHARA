@@ -316,14 +316,12 @@ export const useHandTracker = () => {
             const counts = lastItems.reduce((acc, val) => ({ ...acc, [val]: (acc[val] || 0) + 1 }), {} as Record<string, number>);
             const stablePrediction = Object.keys(counts).find(key => counts[key] >= 3);
 
-            if (stablePrediction && stablePrediction !== lastConfirmedSign.current) {
+            if (stablePrediction) {
                 lastConfirmedSign.current = stablePrediction;
                 letterSequenceRef.current += stablePrediction;
                 predictionStabilityRef.current = [];
-                
                 // Update the UI to show the user what they are currently spelling.
                 setCurrentSpelledWord(letterSequenceRef.current);
-                
             } else if (predictionStabilityRef.current.length > 10) {
                 predictionStabilityRef.current = [];
             }
