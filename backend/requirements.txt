@@ -1,0 +1,10 @@
+tensorflow
+fastapi
+uvicorn
+python-multipart
+googletrans==4.0.0-rc1
+pickle-mixin
+numpy
+scikit-learn
+
+# uvicorn backend.main:app --reload --port 8001
