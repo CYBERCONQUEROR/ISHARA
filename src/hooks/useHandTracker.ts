@@ -7,7 +7,7 @@ import * as stringSimilarity from 'string-similarity';
 type LandmarkConnectionArray = [number, number][];
 
 // A dictionary of common words for auto-correction and suggestions.
-const DICTIONARY = ["HELLO", "GOOD", "MAY", "MORNING", "AFTERNOON", "EVENING", "NIGHT", "HOW", "ARE", "YOU", "I", "AM", "FINE", "THANK", "THANKS", "HELP", "YES", "NO", "PLEASE", "MY", "NAME", "IS", "WHAT", "WHERE", "WHEN", "WHY", "BYE", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "RAHUL", "BABY", "HI", "SORRY", "LOVE", "BAT", "CAT", "DOG", "EAT", "RUN", "SEE"];
+const DICTIONARY = ["HELLO", "GOOD", "MAY", "MORNING", "AFTERNOON", "EVENING", "NIGHT", "HOW", "ARE", "YOU", "I", "AM", "FINE", "THANK", "THANKS", "HELP", "YES", "NO", "PLEASE", "MY", "NAME", "IS", "WHAT", "WHERE", "WHEN", "WHY", "BYE", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "RAHUL", "BABY", "HI", "SORRY", "LOVE", "BAT", "CAT", "DOG", "EAT", "RUN", "SEE", "SIR"];
 const DICTIONARY_SET = new Set(DICTIONARY);
 
 export const primeSpeechSynthesis = () => {
@@ -105,6 +105,48 @@ export const useHandTracker = () => {
   const lastConfirmedSign = useRef<string | null>(null);
   const wordTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastDetectionTimeRef = useRef(0);
+  
+  // Duplicate prevention refs
+  const lastAddedSignRef = useRef<string>('');
+  const lastSignTimeRef = useRef(0);
+  const signCooldownRef = useRef(2000); // 2 seconds cooldown between same signs
+
+
+
+  const canAddSign = (sign: string): boolean => {
+    const now = Date.now();
+    
+    // If it's the same sign as last time, check cooldown
+    if (sign === lastAddedSignRef.current) {
+      const timeSinceLastSign = now - lastSignTimeRef.current;
+      if (timeSinceLastSign < signCooldownRef.current) {
+        console.log(`Duplicate sign "${sign}" blocked (cooldown: ${Math.round(timeSinceLastSign)}ms < ${signCooldownRef.current}ms)`);
+        return false;
+      }
+    }
+    
+    // If it's a different sign, allow it but with shorter cooldown
+    if (sign !== lastAddedSignRef.current) {
+      const timeSinceLastSign = now - lastSignTimeRef.current;
+      if (timeSinceLastSign < 500) { // 500ms minimum between different signs
+        console.log(`Sign "${sign}" blocked (too soon after last sign: ${Math.round(timeSinceLastSign)}ms)`);
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
+  const addSignToSequence = (sign: string) => {
+    if (!canAddSign(sign)) return false;
+    
+    lastAddedSignRef.current = sign;
+    lastSignTimeRef.current = Date.now();
+    letterSequenceRef.current += sign;
+    setCurrentSpelledWord(letterSequenceRef.current);
+    console.log(`Added sign "${sign}" to sequence`);
+    return true;
+  };
 
   useEffect(() => {
     const createHandLandmarker = async () => {
@@ -131,6 +173,16 @@ export const useHandTracker = () => {
 
   const processSequence = () => {
     if (!letterSequenceRef.current) return;
+
+    // Special case for "SIR" - speak it as individual letters
+    if (letterSequenceRef.current === "SIR") {
+        speak("S I R");
+        setBuildingSentence(prev => (prev ? prev + ' S I R' : 'S I R').trim());
+        letterSequenceRef.current = '';
+        setCurrentSpelledWord('');
+        setSuggestions([]);
+        return;
+    }
 
     const { sentence, remainder } = segmentSentence(letterSequenceRef.current, DICTIONARY_SET);
 
@@ -291,8 +343,15 @@ export const useHandTracker = () => {
     letterSequenceRef.current = '';
     if (wordTimeoutRef.current) clearTimeout(wordTimeoutRef.current);
     predictionStabilityRef.current = [];
+    
+    // Reset duplicate prevention
+    lastAddedSignRef.current = '';
+    lastSignTimeRef.current = 0;
+    
     window.speechSynthesis.cancel();
   };
+
+
   
   useEffect(() => {
     return () => {
@@ -318,10 +377,11 @@ export const useHandTracker = () => {
 
             if (stablePrediction) {
                 lastConfirmedSign.current = stablePrediction;
-                letterSequenceRef.current += stablePrediction;
-                predictionStabilityRef.current = [];
-                // Update the UI to show the user what they are currently spelling.
-                setCurrentSpelledWord(letterSequenceRef.current);
+                
+                // Use the new duplicate prevention logic
+                if (addSignToSequence(stablePrediction)) {
+                    predictionStabilityRef.current = [];
+                }
             } else if (predictionStabilityRef.current.length > 10) {
                 predictionStabilityRef.current = [];
             }
