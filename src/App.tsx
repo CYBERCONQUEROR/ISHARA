@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import { useAuth } from "./contexts/AuthContext";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import Translator from "./pages/Translator";
 import Talk from "./pages/Talk";
 import ContinueLearning from './pages/ContinueLearning';
@@ -27,6 +28,7 @@ function App() {
     <TooltipProvider>
       <div className="flex flex-col min-h-screen bg-background font-sans antialiased">
         <Navigation />
+        <ScrollToTop />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Index />} />

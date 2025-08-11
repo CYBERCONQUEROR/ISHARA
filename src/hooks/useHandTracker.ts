@@ -380,7 +380,7 @@ export const useHandTracker = () => {
                 
                 // Use the new duplicate prevention logic
                 if (addSignToSequence(stablePrediction)) {
-                    predictionStabilityRef.current = [];
+                predictionStabilityRef.current = [];
                 }
             } else if (predictionStabilityRef.current.length > 10) {
                 predictionStabilityRef.current = [];
