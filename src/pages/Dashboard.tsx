@@ -103,6 +103,15 @@ const Dashboard = () => {
               Icon={action.Icon}
               gradient={action.gradient}
               useContainer={false}
+              buttonClassName={
+                index === 0
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white"
+                  : index === 1
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+                  : index === 2
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                  : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+              }
             />
           ))}
         </div>

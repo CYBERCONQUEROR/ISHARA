@@ -15,9 +15,10 @@ interface ActionBannerProps {
   Icon?: LucideIcon;
   gradient?: string;
   useContainer?: boolean;
+  buttonClassName?: string;
 }
 
-const ActionBanner = ({ className, title, description, buttonText, linkTo, Icon, gradient = 'bg-ishara-gradient', useContainer = true }: ActionBannerProps) => {
+const ActionBanner = ({ className, title, description, buttonText, linkTo, Icon, gradient = 'bg-ishara-gradient', useContainer = true, buttonClassName }: ActionBannerProps) => {
   const bannerContent = (
     <div className={cn("rounded-2xl p-8 text-center text-white h-full flex flex-col justify-center items-center", gradient)}>
       {Icon && (
@@ -33,8 +34,7 @@ const ActionBanner = ({ className, title, description, buttonText, linkTo, Icon,
       </p>
       <Link to={linkTo}>
         <Button
-          variant="outline"
-          className="bg-white text-ishara-blue hover:bg-gray-100 px-6 py-2 text-base"
+          className={cn("px-6 py-2 text-base font-semibold rounded-md shadow-sm", buttonClassName ? buttonClassName : "bg-cyan-600 hover:bg-cyan-700 text-white")}
         >
           {buttonText}
         </Button>

@@ -58,7 +58,7 @@ const Navigation = () => {
           smooth={true}
           duration={500}
           offset={-80}
-          className="cursor-pointer text-sm font-semibold transition-colors text-gray-600 hover:text-ishara-blue"
+          className="cursor-pointer text-sm font-semibold transition-colors text-gray-600 hover:text-ishara-blue dark:text-gray-200 dark:hover:text-cyan-400"
         >
           {children}
         </ScrollLink>
@@ -67,7 +67,7 @@ const Navigation = () => {
 
     if (!isHomePage && (href.startsWith('features') || href.startsWith('use-cases') || href.startsWith('impact') || href.startsWith('pricing') || href.startsWith('about'))) {
         return (
-            <RouterLink to={`/#${href}`} className="text-sm font-semibold transition-colors text-gray-600 hover:text-ishara-blue">
+            <RouterLink to={`/#${href}`} className="text-sm font-semibold transition-colors text-gray-600 hover:text-ishara-blue dark:text-gray-200 dark:hover:text-cyan-400">
                 {children}
             </RouterLink>
         );
@@ -76,10 +76,10 @@ const Navigation = () => {
     return (
       <RouterLink
         to={href === 'home' ? '/' : `/${href}`}
-        className={`text-sm font-semibold transition-colors hover:text-ishara-blue ${
+        className={`text-sm font-semibold transition-colors hover:text-ishara-blue dark:hover:text-cyan-400 ${
           location.pathname === `/${href}` || (href === 'home' && location.pathname === '/')
-            ? 'text-ishara-blue'
-            : 'text-gray-600'
+            ? 'text-ishara-blue dark:text-cyan-400'
+            : 'text-gray-600 dark:text-gray-200'
         }`}
       >
         {children}
@@ -88,7 +88,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'border-b border-gray-200/50 bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}>
+    <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'border-b border-gray-200/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm' : 'bg-transparent dark:bg-gray-900/40'}`}>
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           <RouterLink to="/" className="flex items-center space-x-2 font-bold text-2xl text-ishara-blue hover:text-ishara-teal transition-colors">

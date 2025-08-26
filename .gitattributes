@@ -1,2 +1,32 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Always normalize line endings to LF in repo
+* text=auto eol=lf
+
+# Treat JS/TS/JSON/HTML/CSS/MD as text with LF endings
+*.js     text eol=lf
+*.jsx    text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.json   text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+
+# Prevent Git from messing with images/binaries
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary
+
+# Keep lock files consistent
+package-lock.json text eol=lf
+yarn.lock         text eol=lf
+pnpm-lock.yaml    text eol=lf
+
+# Ignore file mode changes (optional, if chmod differences cause issues)
+# * -text
