@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition Test</title>
+</head>
+<body>
+    <h1>Speech Recognition Support Test</h1>
+    <div id="results"></div>
+
+    <script>
+        function testSpeechRecognition() {
+            const results = document.getElementById('results');
+            let html = '<h2>Test Results:</h2>';
+            
+            // Test browser detection
+            const userAgent = navigator.userAgent;
+            html += `<p><strong>User Agent:</strong> ${userAgent}</p>`;
+            
+            // Test speech recognition APIs
+            html += '<h3>Speech Recognition APIs:</h3>';
+            
+            const apis = [
+                'SpeechRecognition',
+                'webkitSpeechRecognition', 
+                'mozSpeechRecognition',
+                'msSpeechRecognition'
+            ];
+            
+            apis.forEach(api => {
+                const supported = api in window;
+                html += `<p>${api}: ${supported ? '✅ Supported' : '❌ Not Supported'}</p>`;
+                if (supported) {
+                    try {
+                        const constructor = window[api];
+                        const instance = new constructor();
+                        html += `<p style="margin-left: 20px;">✅ Can create instance</p>`;
+                    } catch (error) {
+                        html += `<p style="margin-left: 20px;">❌ Error creating instance: ${error.message}</p>`;
+                    }
+                }
+            });
+            
+            // Test speech synthesis
+            html += '<h3>Speech Synthesis:</h3>';
+            const synthesisSupported = 'speechSynthesis' in window;
+            html += `<p>speechSynthesis: ${synthesisSupported ? '✅ Supported' : '❌ Not Supported'}</p>`;
+            
+            if (synthesisSupported) {
+                try {
+                    const voices = window.speechSynthesis.getVoices();
+                    html += `<p style="margin-left: 20px;">✅ Voices available: ${voices.length}</p>`;
+                } catch (error) {
+                    html += `<p style="margin-left: 20px;">❌ Error getting voices: ${error.message}</p>`;
+                }
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        // Run test when page loads
+        window.addEventListener('load', testSpeechRecognition);
+    </script>
+</body>
+</html> 

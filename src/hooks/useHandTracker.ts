@@ -3,6 +3,7 @@ import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import axios from 'axios';
 import * as stringSimilarity from 'string-similarity';
+import { speak as speakUtil, primeSpeechSynthesis as primeSpeechSynthesisUtil } from '@/lib/speech-utils';
 
 type LandmarkConnectionArray = [number, number][];
 
@@ -10,33 +11,14 @@ type LandmarkConnectionArray = [number, number][];
 const DICTIONARY = ["HELLO", "GOOD", "MAY", "MORNING", "AFTERNOON", "EVENING", "NIGHT", "HOW", "ARE", "YOU", "I", "AM", "FINE", "THANK", "THANKS", "HELP", "YES", "NO", "PLEASE", "MY", "NAME", "IS", "WHAT", "WHERE", "WHEN", "WHY", "BYE", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "RAHUL", "BABY", "HI", "SORRY", "LOVE", "BAT", "CAT", "DOG", "EAT", "RUN", "SEE", "SIR"];
 const DICTIONARY_SET = new Set(DICTIONARY);
 
+
+
 export const primeSpeechSynthesis = () => {
-    if (!('speechSynthesis' in window)) return;
-    // Get voices upfront & on user interaction to unlock speech.
-    window.speechSynthesis.getVoices();
+    primeSpeechSynthesisUtil();
 };
 
 export const speak = (text: string) => {
-  if ('speechSynthesis' in window && text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.9;
-    
-    utterance.onerror = (event) => {
-        console.error('SpeechSynthesisUtterance.onerror', event);
-    };
-
-    // Cancel anything currently speaking to avoid a queue.
-    window.speechSynthesis.cancel();
-    // A small delay can sometimes help, especially after a cancel().
-    setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
-    }, 100);
-
-  } else {
-      if (!text) console.log("Speak function called with no text.");
-      else console.warn("Speech synthesis not supported.");
-  }
+    speakUtil(text);
 };
 
 // This powerful function takes a string of letters (e.g., "HELLOGOOD") and
