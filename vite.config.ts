@@ -11,6 +11,9 @@ export default defineConfig({
     },
     allowedHosts: ['.onrender.com', 'ishara-27a6.onrender.com'] // 👈 add this
   },
+  build: {
+    chunkSizeWarningLimit: 1600, // increase limit (default 500kb)
+  },
   plugins: [react()],
   resolve: {
     alias: {
