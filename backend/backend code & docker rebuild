@@ -1,0 +1,10 @@
+uvicorn backend.main:app --reload --port 8001
+
+
+docker-compose -f docker-compose.simple.yml up --build
+
+docker tag ishara_ishara:latest cyberconqueror/ishara:latest
+
+docker system prune -a --volumes -f
+
+

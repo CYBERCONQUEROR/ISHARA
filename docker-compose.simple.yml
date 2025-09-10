@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Development environment - Single container using Python base
+  ishara:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    ports:
+      - "3000:3000"  # Frontend
+      - "8001:8001"  # Backend
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8001
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/backend/__pycache__
+    networks:
+      - ishara
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+networks:
+  ishara:
+    driver: bridge 
