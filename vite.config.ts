@@ -9,7 +9,7 @@ export default defineConfig({
     watch: {
       ignored: ['**/env/**']
     },
-    allowedHosts: ['.onrender.com', 'ishara-27a6.onrender.com'] // 👈 add this
+    allowedHosts: ['.onrender.com', 'isharaaa-1p82.onrender.com'] // 👈 add this
   },
   build: {
     chunkSizeWarningLimit: 1600, // increase limit (default 500kb)
