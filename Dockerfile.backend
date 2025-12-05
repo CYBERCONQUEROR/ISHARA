@@ -16,8 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 
 # Copy model files into backend folder
-COPY backend/linux.h5 backend/linux.h5
-COPY backend/krishnav.pkl backend/krishnav.pkl
+# COPY backend/linux.h5 backend/linux.h5
+# COPY backend/krishnav.pkl backend/krishnav.pkl
 
 
 
