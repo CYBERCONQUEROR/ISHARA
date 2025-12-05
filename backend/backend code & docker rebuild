@@ -8,3 +8,8 @@ docker tag ishara_ishara:latest cyberconqueror/ishara:latest
 docker system prune -a --volumes -f
 
 
+# rebuild
+docker build -t your-dockerhub-username/your-app:latest .
+
+# push
+docker push your-dockerhub-username/your-app:latest

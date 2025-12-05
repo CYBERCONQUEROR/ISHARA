@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Load the trained model and label encoder
+# # Load the trained model and label encoder
 try:
     model = tf.keras.models.load_model('backend/linux.h5')
     with open('backend/krishnav.pkl', 'rb') as f:
@@ -101,3 +101,4 @@ async def translate_text(request: TranslationRequest):
     except Exception as e:
         print(f"[TRANSLATE ERROR] {e}")
         return {"error": str(e)}
+0

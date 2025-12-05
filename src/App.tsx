@@ -20,6 +20,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import Translator from "./pages/Translator";
 import Talk from "./pages/Talk";
 import ContinueLearning from './pages/ContinueLearning';
+// import HandGesture from "./components/HandGesture";
+
 
 function App() {
   const { user } = useAuth();
@@ -47,11 +49,13 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {/* <HandGesture /> */}
         </main>
         <Footer />
       </div>
       <Sonner />
     </TooltipProvider>
+    
   );
 }
 

@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 # Ignore large library binaries
 linux/lib/python3.10/site-packages/
-
+.env
 .venv
 dist
 dist-ssr

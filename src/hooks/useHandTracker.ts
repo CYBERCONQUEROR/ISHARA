@@ -4,11 +4,17 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import axios from 'axios';
 import * as stringSimilarity from 'string-similarity';
 import { speak as speakUtil, primeSpeechSynthesis as primeSpeechSynthesisUtil } from '@/lib/speech-utils';
+const API = import.meta.env.VITE_API_URL;
 
 type LandmarkConnectionArray = [number, number][];
 
 // A dictionary of common words for auto-correction and suggestions.
-const DICTIONARY = ["HELLO", "GOOD", "MAY", "MORNING", "AFTERNOON", "EVENING", "NIGHT", "HOW", "ARE", "YOU", "I", "AM", "FINE", "THANK", "THANKS", "HELP", "YES", "NO", "PLEASE", "MY", "NAME", "IS", "WHAT", "WHERE", "WHEN", "WHY", "BYE", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "RAHUL", "BABY", "HI", "SORRY", "LOVE", "BAT", "CAT", "DOG", "EAT", "RUN", "SEE", "SIR"];
+const DICTIONARY = ["HELLO", "GOOD", "MAY", "MORNING", "AFTERNOON", "EVENING", "NIGHT", "HOW", "ARE", "YOU", "I", "AM", "FINE", "THANK", "THANKS", 
+  "HELP", "YES", "NO", "PLEASE", "MY", "NAME", "IS", "WHAT", "WHERE", "WHEN", "WHY", "BYE", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", 
+  "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "RAHUL", "BABY", "HI", "SORRY", "LOVE", "BAT", "CAT", "DOG", "EAT", 
+  "RUN", "SEE", "SIR"];
+
+
 const DICTIONARY_SET = new Set(DICTIONARY);
 
 
@@ -344,8 +350,20 @@ export const useHandTracker = () => {
 
   const sendLandmarksToBackend = async (landmarks: number[][]) => {
     try {
-        const response = await axios.post('http://localhost:8001/predict', { landmarks: [landmarks] });
-        const newPrediction = response.data.prediction || "";
+      const API = import.meta.env.VITE_API_URL;
+      console.log("API URL:", API);
+
+       const response =  await axios.post(`${API}/predict`, { landmarks: [landmarks] });
+       console.log("BACKEND RAW RESPONSE:", response.data);
+
+        // const response = await axios.post('http://localhost:8001/predict', { landmarks: [landmarks] });
+        
+        if (!response || !response.data) {
+            console.error("Invalid backend response:", response);
+            return;
+}
+
+        const newPrediction = response.data?.prediction ?? "";
         
         setRawPrediction(newPrediction || '...');
 
@@ -389,4 +407,4 @@ export const useHandTracker = () => {
     stopVideo,
     resetTranslation,
   };
-}; 
+};

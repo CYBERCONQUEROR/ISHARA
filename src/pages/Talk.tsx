@@ -18,6 +18,11 @@ import {
   getErrorMessage 
 } from '@/lib/speech-utils';
 
+
+
+
+
+
 const supportedLanguages = [
   { value: 'en-US', label: 'English', translateCode: 'en' },
   { value: 'hi-IN', label: 'Hindi', translateCode: 'hi' },
