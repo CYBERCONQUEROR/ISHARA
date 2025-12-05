@@ -15,6 +15,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code & models
 COPY backend/ ./backend/
 
+# Copy model files into backend folder
+COPY backend/linux.h5 backend/linux.h5
+COPY backend/krishnav.pkl backend/krishnav.pkl
+
+
+
 EXPOSE 8001
 
 HEALTHCHECK CMD curl -f http://localhost:${PORT:-8001}/ || exit 1
