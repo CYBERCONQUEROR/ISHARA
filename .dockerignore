@@ -93,9 +93,9 @@ env.bak/
 venv.bak/
 
 # Model files (will be copied separately)
-*.h5
-*.pkl
-*.pth
+# *.h5
+# *.pkl
+# *.pth
 
 # Temporary files
 tmp/
