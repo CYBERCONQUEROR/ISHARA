@@ -6,9 +6,14 @@ import numpy as np
 from pydantic import BaseModel
 from typing import List
 from googletrans import Translator
-
+import os
 # Initialize FastAPI app
 app = FastAPI()
+
+print("DEBUG: Listing backend folder inside container...")
+for root, dirs, files in os.walk("/app/backend"):
+    print("Directory:", root)
+    print("Files:", files)
 
 # Allow CORS for communication with the React frontend
 app.add_middleware(
