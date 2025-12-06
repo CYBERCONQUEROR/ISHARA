@@ -10,10 +10,10 @@ import os
 # Initialize FastAPI app
 app = FastAPI()
 
-print("DEBUG: Listing backend folder inside container...")
-for root, dirs, files in os.walk("/app/backend"):
-    print("Directory:", root)
-    print("Files:", files)
+# print("DEBUG: Listing backend folder inside container...")
+# for root, dirs, files in os.walk("/app/backend"):
+#     print("Directory:", root)
+#     print("Files:", files)
 
 # Allow CORS for communication with the React frontend
 app.add_middleware(
@@ -24,16 +24,50 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# # Load the trained model and label encoder
+
+# ---------------------------------------
+# SAFE UNIVERSAL PATH HANDLING
+# ---------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "linux.h5")
+LABEL_PATH = os.path.join(BASE_DIR, "krishnav.pkl")
+
+# ---------------------------------------
+# LOAD MODEL + LABEL ENCODER
+# ---------------------------------------
 try:
-    model = tf.keras.models.load_model('backend/linux.h5')
-    with open('backend/krishnav.pkl', 'rb') as f:
+    model = tf.keras.models.load_model(MODEL_PATH)
+    with open(LABEL_PATH, "rb") as f:
         label_encoder = pickle.load(f)
     print("Model and label encoder loaded successfully.")
 except Exception as e:
-    print(f"Error loading model or label encoder: {e}")
+    print("❌ ERROR loading model or encoder:", e)
     model = None
     label_encoder = None
+# # Load the trained model and label encoder
+# try:
+#     # model = tf.keras.models.load_model('backend/linux.h5')
+#     # with open('backend/krishnav.pkl', 'rb') as f:
+#     #     label_encoder = pickle.load(f)
+#     # print("Model and label encoder loaded successfully.")
+
+
+
+#     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+#     model_path = os.path.join(BASE_DIR, "linux.h5")
+#     pkl_path   = os.path.join(BASE_DIR, "krishnav.pkl")
+
+#     model = tf.keras.models.load_model(model_path)
+
+#     with open(pkl_path, "rb") as f:
+#         label_encoder = pickle.load(f)
+
+
+# except Exception as e:
+#     print(f"Error loading model or label encoder: {e}")
+#     model = None
+#     label_encoder = None
 
 def normalize_and_reshape_for_cnn(landmarks):
     # Process landmarks to match the CNN model's expected input format.
