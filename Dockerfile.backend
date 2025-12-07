@@ -7,29 +7,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy backend requirements
-COPY backend/requirements.txt requirements.txt
-
+# Copy requirements
+COPY backend/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code & models
-WORKDIR /app/backend
+# Copy backend code & model files (IMPORTANT: no extra folder!)
 COPY backend/ /app/backend/
 
-
-# DEBUG - print contents
-RUN echo "DEBUG: Docker build backend folder:" && ls -l ./backend
-RUN ls -R /app/backend
-
-# Copy model files into backend folder
-# COPY backend/linux.h5 backend/linux.h5
-# COPY backend/krishnav.pkl backend/krishnav.pkl
-
-
+# Debug: list to verify files exist
+RUN echo "=== BACKEND FILES INSIDE CONTAINER ===" && ls -l /app/backend
 
 EXPOSE 8001
 
 HEALTHCHECK CMD curl -f http://localhost:${PORT:-8001}/ || exit 1
 
-CMD uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8001}
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-8001}"]
