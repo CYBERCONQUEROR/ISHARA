@@ -72,3 +72,4 @@ tensorflow-cpu==2.13.0
 tensorboard==2.13.0
 googletrans==4.0.0-rc1
 pydantic
+scikit-learn
