@@ -39,6 +39,7 @@ const Navigation = () => {
     { label: 'Impact', href: 'impact', public: true },
     { label: 'Pricing', href: 'pricing', public: true },
     { label: 'About', href: 'about', public: true },
+    { label: 'Android Application', href: 'android-app', public: true },
     { label: 'Support', href: 'support', public: true },
   ];
 

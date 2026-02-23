@@ -11,6 +11,7 @@ import Impact from "./pages/Impact";
 import Pricing from "./pages/Pricing";
 import About from "./pages/About";
 import Support from "./pages/Support";
+import AndroidApp from "@/pages/AndroidApp";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import { useAuth } from "./contexts/AuthContext";
@@ -47,6 +48,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/android-app" element={<AndroidApp />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           {/* <HandGesture /> */}
