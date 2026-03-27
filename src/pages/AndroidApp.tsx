@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Smartphone, ShieldCheck, Info } from "lucide-react";
 
 const AndroidApp = () => {
-  const apkUrl = "https://kridikshit.onrender.com/";
+  const apkUrl = "https://www.upload-apk.com/en/kfzyzHCzTVVOK3i";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
