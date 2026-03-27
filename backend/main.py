@@ -44,6 +44,16 @@ except Exception as e:
     print("❌ ERROR loading model or encoder:", e)
     model = None
     label_encoder = None
+
+ACTION_MODEL_PATH = os.path.join(BASE_DIR, "action.h5")
+try:
+    action_model = tf.keras.models.load_model(ACTION_MODEL_PATH)
+    action_labels = ["i", "know", "hindi"]
+    print("Action model loaded successfully.")
+except Exception as e:
+    print("❌ ERROR loading action model:", e)
+    action_model = None
+    action_labels = None
 # # Load the trained model and label encoder
 # try:
 #     # model = tf.keras.models.load_model('backend/linux.h5')
@@ -140,4 +150,35 @@ async def translate_text(request: TranslationRequest):
     except Exception as e:
         print(f"[TRANSLATE ERROR] {e}")
         return {"error": str(e)}
-0
+
+class ActionRequest(BaseModel):
+    sequence: List[List[float]]
+
+@app.post("/predict_action")
+async def predict_action(data: ActionRequest):
+    if not action_model:
+        return {"error": "Action model not loaded."}
+
+    try:
+        sequence_array = np.array(data.sequence)
+        
+        if sequence_array.shape != (30, 1662):
+            return {"error": f"Invalid input shape. Expected (30, 1662), got {sequence_array.shape}."}
+        
+        # Add a batch dimension to create a shape of (1, 30, 1662)
+        sequence_batch = np.expand_dims(sequence_array, axis=0)
+
+        # Make a prediction
+        prediction = action_model.predict(sequence_batch)[0]
+        confidence = np.max(prediction)
+        
+        # Only return a prediction if the model is confident
+        if confidence > 0.8:
+            predicted_class_index = np.argmax(prediction)
+            predicted_class_label = action_labels[predicted_class_index]
+            return {"prediction": predicted_class_label, "confidence": float(confidence)}
+        else:
+            return {"prediction": "", "confidence": float(confidence)}
+            
+    except Exception as e:
+        return {"error": str(e)}

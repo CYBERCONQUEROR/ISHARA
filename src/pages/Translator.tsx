@@ -1,50 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Camera, RefreshCcw, Info, CheckCircle, Volume2 } from 'lucide-react';
+import { Camera, RefreshCcw, CheckCircle, Volume2, Activity } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { useHandTracker, speak, primeSpeechSynthesis } from '../hooks/useHandTracker';
+import { useActionTracker } from '../hooks/useActionTracker';
 
 const Translator = () => {
-  const {
-    videoRef,
-    canvasRef,
-    rawPrediction,
-    currentSpelledWord,
-    buildingSentence,
-    finalTranslation,
-    suggestions,
-    detectionStatus,
-    handLandmarker,
-    startVideo,
-    stopVideo,
-    resetTranslation,
-  } = useHandTracker();
-
+  const [mode, setMode] = useState<'letters' | 'actions'>('letters');
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [speechPrimed, setSpeechPrimed] = useState(false);
+
+  // Both hooks will initialize in background, but we only use one
+  const handTracker = useHandTracker();
+  const actionTracker = useActionTracker();
+
+  // Stop camera on mode change
+  useEffect(() => {
+    if (isCameraOn) {
+        handTracker.stopVideo();
+        actionTracker.stopVideo();
+        setIsCameraOn(false);
+    }
+  }, [mode]);
+
+  const activeTracker = mode === 'letters' ? handTracker : actionTracker;
+  const isModelLoading = mode === 'letters' ? !handTracker.handLandmarker : !actionTracker.holisticModelLoaded;
+  const isError = activeTracker.detectionStatus.startsWith('Error');
 
   const handleStartCamera = async () => {
     if (!speechPrimed) {
       primeSpeechSynthesis();
       setSpeechPrimed(true);
     }
-    const success = await startVideo();
+    const success = await activeTracker.startVideo();
     if (success) {
       setIsCameraOn(true);
     }
   };
 
   const handleStopCamera = () => {
-    stopVideo();
+    activeTracker.stopVideo();
     setIsCameraOn(false);
   };
 
   const handleReset = () => {
-    resetTranslation();
+    activeTracker.resetTranslation();
   };
-
-  const isModelLoading = !handLandmarker;
-  const isError = detectionStatus.startsWith('Error');
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 lg:p-8">
@@ -58,13 +60,35 @@ const Translator = () => {
           </p>
         </header>
 
+        <div className="flex justify-center mb-8">
+            <div className="flex items-center space-x-4 bg-gray-800/80 px-6 py-3 rounded-full border border-gray-700">
+                <span className={`text-sm font-medium ${mode === 'letters' ? 'text-cyan-400' : 'text-gray-400'}`}>Letters (Spelling)</span>
+                <Switch 
+                    checked={mode === 'actions'} 
+                    onCheckedChange={(checked) => setMode(checked ? 'actions' : 'letters')} 
+                />
+                <span className={`text-sm font-medium ${mode === 'actions' ? 'text-purple-400' : 'text-gray-400'}`}>Actions (Sequences)</span>
+            </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Panel: Camera Feed and Controls */}
           <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 overflow-hidden">
             <CardContent className="p-4 sm:p-6">
               <div className="relative aspect-[4/3] bg-black rounded-lg overflow-hidden flex items-center justify-center">
-                <video ref={videoRef} className="absolute top-0 left-0 w-full h-full object-cover" autoPlay playsInline muted style={{ transform: "scaleX(-1)" }} />
-                <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+                {/* Dynamically mount video and canvas element based on mode so ref binds properly to correct hook */}
+                {mode === 'letters' ? (
+                     <video ref={handTracker.videoRef as any} className="absolute top-0 left-0 w-full h-full object-cover" autoPlay playsInline muted style={{ transform: "scaleX(-1)" }} />
+                ) : (
+                     <video ref={actionTracker.videoRef as any} className="absolute top-0 left-0 w-full h-full object-cover" autoPlay playsInline muted style={{ transform: "scaleX(-1)" }} />
+                )}
+                
+                {mode === 'letters' ? (
+                     <canvas ref={handTracker.canvasRef as any} className="absolute top-0 left-0 w-full h-full" /> 
+                ) : (
+                     <canvas ref={actionTracker.canvasRef as any} className="absolute top-0 left-0 w-full h-full" /> 
+                )}
+                
                 {!isCameraOn && (
                   <div className="z-10 text-center">
                     <Camera className="mx-auto h-16 w-16 text-gray-500" />
@@ -73,7 +97,7 @@ const Translator = () => {
                 )}
                 {isError && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
-                        <p className="text-red-400 text-lg">{detectionStatus}</p>
+                        <p className="text-red-400 text-lg">{activeTracker.detectionStatus}</p>
                     </div>
                 )}
               </div>
@@ -98,49 +122,64 @@ const Translator = () => {
           <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 flex flex-col">
             <CardContent className="p-4 sm:p-6 flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-cyan-400">Translation</h2>
+                <h2 className="text-2xl font-bold text-cyan-400">Translation ({mode === 'letters' ? 'Letters' : 'Actions'})</h2>
                 <div className={`flex items-center space-x-2 ${isError ? 'text-red-400' : 'text-gray-400'}`}>
                   <div className={`h-3 w-3 rounded-full ${isCameraOn && !isError ? 'bg-green-500 animate-pulse' : isError ? 'bg-red-500' : 'bg-gray-500'}`}></div>
-                  <span className="text-sm font-medium">{detectionStatus}</span>
+                  <span className="text-sm font-medium">{activeTracker.detectionStatus}</span>
                 </div>
               </div>
 
               <div className="flex-grow flex flex-col bg-gray-900/50 rounded-lg p-4 space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Detected Sentence</h3>
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                     {mode === 'actions' ? 'Current Action' : 'Detected Sentence'}
+                  </h3>
                   <p className="text-2xl text-gray-200 min-h-[6rem]">
-                    {buildingSentence}
-                    <span className="text-purple-400 font-bold animate-pulse"> {currentSpelledWord}</span>
-                    {currentSpelledWord && <span className="text-gray-500 animate-pulse">|</span>}
+                    {activeTracker.buildingSentence}
+                    {mode === 'letters' && (
+                        <>
+                            <span className="text-purple-400 font-bold animate-pulse"> {handTracker.currentSpelledWord}</span>
+                            {handTracker.currentSpelledWord && <span className="text-gray-500 animate-pulse">|</span>}
+                        </>
+                    )}
+                    {mode === 'actions' && (
+                        <>
+                           {actionTracker.currentAction !== '...' && <span className="text-purple-400 font-bold ml-2">[{actionTracker.currentAction}]</span>}
+                        </>
+                    )}
                   </p>
                 </div>
                 
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Suggestions</h3>
-                  <p className="mt-1 text-lg text-cyan-300 min-h-[2rem]">
-                      {suggestions.join('  |  ')}
-                  </p>
-                </div>
+                {mode === 'letters' && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Suggestions</h3>
+                      <p className="mt-1 text-lg text-cyan-300 min-h-[2rem]">
+                          {(handTracker.suggestions || []).join('  |  ')}
+                      </p>
+                    </div>
+                )}
               </div>
               
-              <div className="mt-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-300">Final Translation</h3>
-                  <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => speak(finalTranslation)} 
-                      disabled={!finalTranslation}
-                      aria-label="Speak final translation"
-                      className="text-gray-400 hover:text-white disabled:opacity-50"
-                  >
-                      <Volume2 className="h-5 w-5"/>
-                  </Button>
-                </div>
-                <pre className="mt-1 text-lg text-gray-200 bg-gray-900/50 p-4 rounded-lg whitespace-pre-wrap h-48 overflow-y-auto">
-                  {finalTranslation || "..."}
-                </pre>
-              </div>
+              {mode === 'letters' && (
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold text-gray-300">Final Translation</h3>
+                      <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => speak(handTracker.finalTranslation)} 
+                          disabled={!handTracker.finalTranslation}
+                          aria-label="Speak final translation"
+                          className="text-gray-400 hover:text-white disabled:opacity-50"
+                      >
+                          <Volume2 className="h-5 w-5"/>
+                      </Button>
+                    </div>
+                    <pre className="mt-1 text-lg text-gray-200 bg-gray-900/50 p-4 rounded-lg whitespace-pre-wrap h-48 overflow-y-auto">
+                      {handTracker.finalTranslation || "..."}
+                    </pre>
+                  </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -154,21 +193,21 @@ const Translator = () => {
                         <Camera size={24} />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">1. Start Camera</h3>
-                    <p className="text-gray-400">Click the "Start Camera" button and grant permission. Position both hands clearly in the frame.</p>
+                    <p className="text-gray-400">Select Letters or Actions mode, turn on your camera and place yourself in frame.</p>
                 </div>
                 <div className="bg-gray-800/50 p-6 rounded-lg">
                     <div className="flex items-center justify-center h-12 w-12 rounded-full bg-purple-500/20 text-purple-400 mx-auto mb-4">
-                        <Info size={24} />
+                        <Activity size={24} />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">2. Make Signs</h3>
-                    <p className="text-gray-400">Perform ISL signs. The model requires both hands to be visible for accurate prediction. Hold each sign for a moment.</p>
+                    <p className="text-gray-400">Perform ISL signs. <strong>Letters Mode</strong> expects alphabet spelling. <strong>Actions Mode</strong> requires consecutive motions.</p>
                 </div>
                 <div className="bg-gray-800/50 p-6 rounded-lg">
                     <div className="flex items-center justify-center h-12 w-12 rounded-full bg-green-500/20 text-green-400 mx-auto mb-4">
                         <CheckCircle size={24} />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">3. See Translation</h3>
-                    <p className="text-gray-400">Watch as signs are translated into words and sentences in real-time. Use "Reset" to clear the translation.</p>
+                    <p className="text-gray-400">Watch as signs are translated in real-time. Audio will play upon successfully recognizing words.</p>
                 </div>
             </div>
         </section>
