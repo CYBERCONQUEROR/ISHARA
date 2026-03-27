@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from typing import List
 from googletrans import Translator
 import os
+import asyncio
+import urllib.request
 # Initialize FastAPI app
 app = FastAPI()
 
@@ -182,3 +184,22 @@ async def predict_action(data: ActionRequest):
             
     except Exception as e:
         return {"error": str(e)}
+
+async def keep_alive_loop():
+    url = os.environ.get("RENDER_URL", "https://kridikshit.onrender.com/")
+    while True:
+        await asyncio.sleep(14 * 60)  # Ping every 14 minutes
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            # We use to_thread so the synchronous urlopen doesn't block the async event loop
+            await asyncio.to_thread(urllib.request.urlopen, req)
+            print(f"[Keep-Alive] Successfully pinged {url} to keep server warm!")
+        except Exception as e:
+            print(f"[Keep-Alive] Ping Failed: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    # Only run the keep-alive ping if we are in the Render environment or KEEP_ALIVE is true
+    if os.environ.get("KEEP_ALIVE", "true").lower() == "true":
+        asyncio.create_task(keep_alive_loop())
+        print("[Keep-Alive] Background ping task started!")
