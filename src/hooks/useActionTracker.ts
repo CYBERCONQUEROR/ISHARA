@@ -219,25 +219,28 @@ export const useActionTracker = () => {
         const newPrediction = response.data?.prediction ?? "";
         
         if (newPrediction) {
-            // Only trigger if it's a DIFFERENT word, OR if we had enough silence since the last time we said this word
+            // Log for debugging (can be removed later)
+            console.log(`[ACTION] Detected: ${newPrediction} (Conf: ${response.data?.confidence?.toFixed(2)})`);
+
+            // 1. ALWAYS clear the buffer when we get a strong prediction. 
+            // This prevents "sliding window" duplicates where the same 'i' motion hits twice.
+            sequenceRef.current = [];
+
+            // 2. Only record/speak it if it's DIFFERENT or we've had silence.
             if (newPrediction !== lastDetectedAction.current || silenceCount.current > 5) {
                 lastDetectedAction.current = newPrediction;
                 setCurrentAction(newPrediction);
                 speak(newPrediction);
                 setBuildingSentence(prev => (prev ? prev + ' ' + newPrediction : newPrediction).trim());
                 silenceCount.current = 0;
-                
-                // CRITICAL: We clear the buffer after a word is recorded. 
-                // This prevents the same "i" motion from triggering again as it slides out of the window.
-                sequenceRef.current = [];
             }
         } else {
             // No prediction from backend (silence)
             silenceCount.current += 1;
             setCurrentAction('...');
             
-            // If we have enough silence (approx 2 seconds), we "clear" the last word from memory
-            if (silenceCount.current > 20) {
+            // Require 2 seconds of total silence before allowed to repeat the SAME word
+            if (silenceCount.current > 20) { 
                 lastDetectedAction.current = null;
             }
         }
