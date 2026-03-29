@@ -35,11 +35,7 @@ export const useActionTracker = () => {
     if (results.poseLandmarks) {
         pose = results.poseLandmarks.flatMap(res => [res.x, res.y, res.z, res.visibility || 0]);
     }
-    
-    let face: number[] = new Array(468 * 3).fill(0);
-    if (results.faceLandmarks) {
-        face = results.faceLandmarks.slice(0, 468).flatMap(res => [res.x, res.y, res.z]);
-    }
+
     
     let lh: number[] = new Array(21 * 3).fill(0);
     if (results.leftHandLandmarks) {
@@ -51,7 +47,8 @@ export const useActionTracker = () => {
         rh = results.rightHandLandmarks.flatMap(res => [res.x, res.y, res.z]);
     }
     
-    return [...pose, ...face, ...lh, ...rh];
+    // Returns 258 features total: Pose (132) + Left Hand (63) + Right Hand (63)
+    return [...pose, ...lh, ...rh];
   };
 
   const onResults = (results: Results) => {
@@ -79,7 +76,7 @@ export const useActionTracker = () => {
             lastDetectedAction.current = null;
             
             // Clear sequence buffer if hands are gone for too long (prevents garbage predictions right when hands are raised)
-            if (consecutiveNoHandFrames.current > 5) {
+            if (consecutiveNoHandFrames.current > 15) {
                 sequenceRef.current = [];
             }
         } else {
@@ -93,7 +90,7 @@ export const useActionTracker = () => {
         }
         
         const now = Date.now();
-        if (hasHands && sequenceRef.current.length === 30 && (now - lastPredictionSent.current > 500)) {
+        if (hasHands && sequenceRef.current.length === 30 && (now - lastPredictionSent.current > 100)) {
             sendSequenceToBackend([...sequenceRef.current]);
             lastPredictionSent.current = now;
         }
@@ -213,22 +210,31 @@ export const useActionTracker = () => {
     };
   }, []);
 
+  const silenceCount = useRef(0);
+
   const sendSequenceToBackend = async (sequence: number[][]) => {
     try {
         const response = await axios.post(`${API}/predict_action`, { sequence });
         const newPrediction = response.data?.prediction ?? "";
         
-        if (newPrediction && newPrediction !== lastDetectedAction.current) {
-            lastDetectedAction.current = newPrediction;
-            setCurrentAction(newPrediction);
-            speak(newPrediction);
-            setBuildingSentence(prev => (prev ? prev + ' ' + newPrediction : newPrediction).trim());
-            
-            // Clear sequence buffer to require a full new 30 frames before another gesture
-            sequenceRef.current = [];
-        } else if (!newPrediction) {
-            // Keep currentAction ... or revert to waiting
+        if (newPrediction) {
+            // Only trigger if it's a DIFFERENT word, OR if we had enough silence since the last time we said this word
+            if (newPrediction !== lastDetectedAction.current || silenceCount.current > 3) {
+                lastDetectedAction.current = newPrediction;
+                setCurrentAction(newPrediction);
+                speak(newPrediction);
+                setBuildingSentence(prev => (prev ? prev + ' ' + newPrediction : newPrediction).trim());
+                silenceCount.current = 0;
+            }
+        } else {
+            // No prediction from backend (silence)
+            silenceCount.current += 1;
             setCurrentAction('...');
+            
+            // If we have enough silence, we "clear" the last word from memory so it can be repeated later
+            if (silenceCount.current > 10) {
+                lastDetectedAction.current = null;
+            }
         }
     } catch (error) {
         console.error("Error sending sequence to backend:", error);
