@@ -177,11 +177,16 @@ async def predict_action(data: ActionRequest):
         # Make a prediction - using direct __call__ is faster than .predict for single samples
         prediction_tensor = kridikshit_model(sequence_batch, training=False)
         kri_pred = prediction_tensor.numpy()[0]
+        kri_conf = np.max(kri_pred)
+        kri_label = kridikshit_labels[np.argmax(kri_pred)]
         
-        # Restored threshold to 0.85 to stop fake continuous predictions
-        if kri_conf > 0.85:
+        # Adjusted threshold to 0.70 for a better balance
+        if kri_conf > 0.70:
+            print(f"[ACTION PREDICT] Success: '{kri_label}' | Conf: {kri_conf:.2f}")
             return {"prediction": kri_label, "confidence": float(kri_conf)}
         else:
+            if kri_conf > 0.3: # Only log if there's at least some signal
+                print(f"[ACTION PREDICT] Low Confidence: '{kri_label}' | Conf: {kri_conf:.2f} (Threshold 0.70)")
             return {"prediction": "", "confidence": float(kri_conf)}
             
     except Exception as e:

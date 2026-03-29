@@ -73,11 +73,12 @@ export const useActionTracker = () => {
             consecutiveNoHandFrames.current += 1;
             setDetectionStatus('Waiting for hands...');
             setCurrentAction('...');
-            lastDetectedAction.current = null;
             
             // Clear sequence buffer if hands are gone for too long (prevents garbage predictions right when hands are raised)
             if (consecutiveNoHandFrames.current > 15) {
                 sequenceRef.current = [];
+                // ONLY reset memory if hands are gone for a long time
+                lastDetectedAction.current = null; 
             }
         } else {
             consecutiveNoHandFrames.current = 0;
@@ -219,20 +220,24 @@ export const useActionTracker = () => {
         
         if (newPrediction) {
             // Only trigger if it's a DIFFERENT word, OR if we had enough silence since the last time we said this word
-            if (newPrediction !== lastDetectedAction.current || silenceCount.current > 3) {
+            if (newPrediction !== lastDetectedAction.current || silenceCount.current > 5) {
                 lastDetectedAction.current = newPrediction;
                 setCurrentAction(newPrediction);
                 speak(newPrediction);
                 setBuildingSentence(prev => (prev ? prev + ' ' + newPrediction : newPrediction).trim());
                 silenceCount.current = 0;
+                
+                // CRITICAL: We clear the buffer after a word is recorded. 
+                // This prevents the same "i" motion from triggering again as it slides out of the window.
+                sequenceRef.current = [];
             }
         } else {
             // No prediction from backend (silence)
             silenceCount.current += 1;
             setCurrentAction('...');
             
-            // If we have enough silence, we "clear" the last word from memory so it can be repeated later
-            if (silenceCount.current > 10) {
+            // If we have enough silence (approx 2 seconds), we "clear" the last word from memory
+            if (silenceCount.current > 20) {
                 lastDetectedAction.current = null;
             }
         }
